@@ -88,16 +88,16 @@ end
 -- </TILES>
 
 -- <SPRITES>
--- 001:0000000d00000ddd0000fdee0000feee000feeee00ffeeee00feeeee0ffeeeee
--- 002:d0000000ddddddd0eeddddddeeeeeeeeeeeeeeeeeeecc0ceeeecc0ceeeeeccee
--- 003:0000000000000000dd000000dddddd00eeeeee00eee0ee00eeeeee00eeeeee00
--- 017:0feeeeee0ffeeeee00ffeeee000ffeee0000ffff000f0fff000efffe00effeee
--- 018:eeeeeeeeeeeeeeeceeeeee0ceeeeecc0fff00000fff00000eeff0000eff00000
--- 019:ec0cc0000cc00000c0c00000c000000000000000000000000000000000000000
--- 033:00effeee00effeee00fffeee00fffeee00fffeee00fffeee000ffeee000ffeee
--- 034:eff00000e0f00000eef00000eef00000eef00000eef00000e0ff0000e0fff000
--- 049:0000fffe0000fffe00000fff00000f0f000000ff000000ee000000dd000000dd
--- 050:eefff000eefff000fffff000ffff0000fff00000eeff0000dddddd00dddddd00
+-- 001:000000dd0000dddd000fdeee000feeee00feeeee0ffeeeee0feeeeeeffeeeeee
+-- 002:00000000dddddd00edddddddeeeeeeedeeeeeeeeeecc0ceeeecc0ceeeeecceee
+-- 003:0000000000000000d0000000ddddd000eeeee000ee0ee000eeeee000eeeee000
+-- 017:feeeeeeeffeeeeee0ffeeeee00ffeeee000fffff00f0ffff0000fffe000efeee
+-- 018:eeeeeeeeeeeeeec0eeeee0cceeeecc0cff000000ff000000eeff0000eff00000
+-- 019:c0cc0000cc0000000c0000000000000000000000000000000000000000000000
+-- 033:000efeee000efeee000ffeee000ffeee000ffeee000ffeee0000feee0000feee
+-- 034:eff00000e0f00000eef00000eef00000ee000000ee000000e0000000e0000000
+-- 049:0000fffe0000fffe00000fff0000f0ff00000fff000000ee0000dddd0000dddd
+-- 050:ee000000ee000000fff00000ff000000ff000000eeff0000dddd0000dddd0000
 -- </SPRITES>
 
 -- <MAP>
