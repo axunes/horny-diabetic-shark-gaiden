@@ -59,8 +59,12 @@ end
 -- <TILES>
 -- 001:decdddddeeceeeeeddddddddefffeeedeecccdddddddddeddeddddfeddddddfe
 -- 002:edecdddddecddddedededeeeeddddddeddddddffeeddddeddecddddeeddddddd
+-- 003:444444444444444444322222443555554435cc554435c5564435556644355666
+-- 004:4444444444444444222222242555552425cc552425c556242555662425566624
 -- 017:dedddddfeedddcddddecdddfeddeddedeeffedddedefddddeeddedededfedede
 -- 018:ecedfffedddfdeedfedfeedeeddddcceddeeeddddddddededdffeedddddefdfe
+-- 019:44322222443555554435cc554435c55644355566443556664432222244444444
+-- 020:222222242555552425cc552425c5562425556624255666242222222444444444
 -- </TILES>
 
 -- <SPRITES>
@@ -122,6 +126,6 @@ end
 -- </TRACKS>
 
 -- <PALETTE>
--- 000:1a1c2c5d275db13e53ef7d57ffcd75a7f07038b76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86333c57
+-- 000:1a1c2c7d00ce6900b65500d2480499ffda59ffb76425717929366f3b5dc941a6f673eff7f4f4f494b0c2566c86333c57
 -- </PALETTE>
 
