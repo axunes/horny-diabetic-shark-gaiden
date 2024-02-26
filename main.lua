@@ -81,10 +81,15 @@ end
 -- 034:fffffffefffffffefffffffeeeeeeeedeeeeeeedeeeeeeeddddddddcdddddddc
 -- 035:cccccccccccccdddeeecccccffddddddddcddddddddddddddeddddddddddddde
 -- 036:ccccccccddddddddccceeeeedddffddddcccccccddddddddddddddddeddddddd
+-- 037:dbbbbbbddccccccddcddcdccdddddddddddddddddddddddddddddddddddddddd
+-- 038:dddddddddcbbddddddccdddddddddddddddddddddddddddddddddddddddddddd
+-- 039:0000000000000000000000000000000000000000000dddd0111ddd8d00dddddd
 -- 049:ddddddddcccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 -- 050:dddddddccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 -- 051:ddddddddeedddcddddecdddfeddeddedeeffedddedefddddeeddedededfedede
 -- 052:dcddfffeddddddeddddfeedeeddddcceddeeeddddddddededdffeedddddefdfe
+-- 053:dddddddddddddddddddddddddddddddddddddddddeddddddd9edddddddeeeeee
+-- 054:ddddddddddddddddddddddddddddddddddddddddddddddddddeedeeeee9eee9d
 -- </TILES>
 
 -- <SPRITES>
@@ -167,12 +172,12 @@ end
 -- </PATTERNS>
 
 -- <TRACKS>
--- 000:1410002810003c10004020001420002820003c2000403000000000000000000000000000000000000000000000000000ae00df
--- 001:9beb3f000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000050
+-- 000:1410102810103c10104020101420102820103c2010403010000000000000000000000000000000000000000000000000ae00df
+-- 001:9beb3f0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0
 -- 002:d83f040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000ef
 -- </TRACKS>
 
 -- <PALETTE>
--- 000:1a1c2c7d00ce6900b65500d2480499ffda59ffb7642571793414403b5dc941a6f673eff7c2deff94aad6566cd2333c99
+-- 000:1a1c2c7d00ce6900b65500d2480499ffda59ffb7642571793414403b5dc941a6f681daeec2deff94aad6566cd2333c99
 -- </PALETTE>
 
