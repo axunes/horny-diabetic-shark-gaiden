@@ -6,12 +6,22 @@
 -- version: 0.1
 -- script:  lua
 
+Vector2 = {new = function(x, y) end}
 
+Vector2 = {
+	ZERO = Vector2.new(),
 
-vec2 = {
-	meta = {
-		__add = function (s, v) 
-			return vec2.new(s.x + v.x, s.y + v.y)
+	mt = {
+		__add = function (a, b) 
+			return Vector2.new(a.x + b.x, a.y + b.y)
+		end,
+
+		__sub = function (a, b) 
+			return Vector2.new(a.x - b.x, a.y - b.y)
+		end,
+
+		__eq = function (a, b) 
+			return a.x == b.x and a.y == b.y
 		end
 	},
 
@@ -21,7 +31,7 @@ vec2 = {
 			y = y or 0,
 		}
 		
-		setmetatable(v, vec2.meta)
+		setmetatable(v, Vector2.mt)
 	
 		return v
 	end
@@ -29,28 +39,35 @@ vec2 = {
 
 
 
-player = {
+local player = {
 	SPEED = 2,
 	MAX_ACCEL = 10,
 
-	pos = vec2.new(),
+	position = Vector2.new(),
+	velocity = Vector2.new(),
 	
-	move = function(s, v)
-		s.pos = s.pos + v
+	tick = function(self, v)
+		local joy_vector = get_arrows()
+		if joy_vector == Vector2.ZERO and self.velocity ~= Vector2.ZERO then
+			self.velocity = self.velocity - Vector2.new(self.velocity.x > 0 and 1 or -1, self.velocity.x > 0 and 1 or -1)
+		else
+			self.velocity = self.velocity + get_arrows()
+		end
+		self.position = self.position + self.velocity
 	end
 }
 
 
 function TIC()
 	cls()
-	player:move(get_arrows())
+	player:tick()
 
-	print(player.pos.x,84,84)
+	print(player.position.x,84,84)
 end
 
 
 function get_arrows()
-	return vec2.new(
+	return Vector2.new(
 		(btn(3) and 1 or 0)-(btn(2) and 1 or 0),
 		(btn(0) and 1 or 0)-(btn(1) and 1 or 0)
 	)
