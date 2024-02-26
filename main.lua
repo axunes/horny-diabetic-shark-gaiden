@@ -9,8 +9,6 @@
 Vector2 = {new = function(x, y) end}
 
 Vector2 = {
-	ZERO = Vector2.new(),
-
 	mt = {
 		__add = function (a, b) 
 			return Vector2.new(a.x + b.x, a.y + b.y)
@@ -21,7 +19,7 @@ Vector2 = {
 		end,
 
 		__eq = function (a, b) 
-			return a.x == b.x and a.y == b.y
+			return (a.x == b.x) and (a.y == b.y)
 		end
 	},
 
@@ -37,6 +35,7 @@ Vector2 = {
 	end
 }
 
+Vector2.ZERO = Vector2.new()
 
 
 local player = {
@@ -49,9 +48,9 @@ local player = {
 	tick = function(self, v)
 		local joy_vector = get_arrows()
 		if joy_vector == Vector2.ZERO and self.velocity ~= Vector2.ZERO then
-			self.velocity = self.velocity - Vector2.new(self.velocity.x > 0 and 1 or -1, self.velocity.x > 0 and 1 or -1)
+			self.velocity = self.velocity - Vector2.new(self.velocity.x > 0 and 1 or -1, self.velocity.y > 0 and 1 or -1)
 		else
-			self.velocity = self.velocity + get_arrows()
+			self.velocity = self.velocity + joy_vector
 		end
 		self.position = self.position + self.velocity
 	end
@@ -62,7 +61,7 @@ function TIC()
 	cls()
 	player:tick()
 
-	print(player.position.x,84,84)
+	print(player.velocity.x,84,84)
 end
 
 
