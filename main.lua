@@ -1,8 +1,8 @@
--- title:   game title
--- author:  game developer, email, etc.
--- desc:    short description
--- site:    website link
--- license: MIT License (change this to your license of choice)
+-- title:   tbd
+-- author:  axunes
+-- desc:    no
+-- site:    https://axunes.net
+-- license: MIT License
 -- version: 0.1
 -- script:  lua
 
@@ -18,6 +18,10 @@ Vector2 = {
 			return Vector2.new(a.x - b.x, a.y - b.y)
 		end,
 
+		__mul = function (a, b) 
+			return Vector2.new(a.x * b.x, a.y * b.y)
+		end,
+
 		__eq = function (a, b) 
 			return (a.x == b.x) and (a.y == b.y)
 		end
@@ -28,6 +32,8 @@ Vector2 = {
 			x = x or 0,
 			y = y or 0,
 		}
+
+		v.clamp = Vector2.clamp
 		
 		setmetatable(v, Vector2.mt)
 	
@@ -38,20 +44,29 @@ Vector2 = {
 Vector2.ZERO = Vector2.new()
 
 
+function Vector2.clamp(self, min, max)
+	return Vector2.new(
+		self.x > max.x and max.x or self.x < min.x or min.x or self.x,
+		self.y > max.y and max.y or self.y < min.y or min.y or self.y
+	)
+end
+
+
 local player = {
-	SPEED = 2,
-	MAX_ACCEL = 10,
+	ACCELERATION = 2,
+	MAX_VELOCITY = 10,
 
 	position = Vector2.new(),
 	velocity = Vector2.new(),
 	
 	tick = function(self, v)
 		local joy_vector = get_arrows()
-		if joy_vector == Vector2.ZERO and self.velocity ~= Vector2.ZERO then
-			self.velocity = self.velocity - Vector2.new(self.velocity.x > 0 and 1 or -1, self.velocity.y > 0 and 1 or -1)
+		if joy_vector == Vector2.ZERO then
+			self.velocity = self.velocity - Vector2.new(self.velocity.x > 0 and 1 or self.velocity.x < 0 and -1 or 0, self.velocity.y > 0 and 1 or self.velocity.y < 0 and -1 or 0)
 		else
-			self.velocity = self.velocity + joy_vector
+			self.velocity = (self.velocity + joy_vector * Vector2.new(self.ACCELERATION, self.ACCELERATION)):clamp(Vector2.new(-self.MAX_VELOCITY, -self.MAX_VELOCITY), Vector2.new(self.MAX_VELOCITY, self.MAX_VELOCITY))
 		end
+
 		self.position = self.position + self.velocity
 	end
 }
