@@ -6,6 +6,49 @@
 -- version: 0.1
 -- script:  lua
 
+Button = {
+	p1 = {
+		up = 0,
+		down = 1,
+		left = 2,
+		right = 3,
+		a = 4,
+		b = 5,
+		c = 6,
+		d = 7
+	},
+	p2 = {
+		up = 8,
+		down = 9,
+		left = 10,
+		right = 11,
+		a = 12,
+		b = 13,
+		c = 14,
+		d = 15
+	},
+	p3 = {
+		up = 16,
+		down = 17,
+		left = 18,
+		right = 19,
+		a = 20,
+		b = 21,
+		c = 22,
+		d = 23
+	},
+	p3 = {
+		up = 24,
+		down = 25,
+		left = 26,
+		right = 27,
+		a = 28,
+		b = 29,
+		c = 30,
+		d = 31
+	}
+}
+
 Vector2 = {new = function(x, y) end}
 
 Vector2 = {
@@ -82,8 +125,8 @@ end
 
 function get_arrows()
 	return Vector2.new(
-		(btn(3) and 1 or 0)-(btn(2) and 1 or 0),
-		(btn(0) and 1 or 0)-(btn(1) and 1 or 0)
+		(btn(Button.p1.right) and 1 or 0) - (btn(Button.p1.left) and 1 or 0),
+		(btn(Button.p1.down) and 1 or 0) - (btn(Button.p1.up) and 1 or 0)
 	)
 end
 
