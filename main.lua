@@ -81,6 +81,7 @@ Vector2 = {
 		}
 
 		v.clamp = Vector2.clamp
+		v.floor = Vector2.floor
 		
 		setmetatable(v, Vector2.mt)
 	
@@ -98,10 +99,18 @@ function Vector2.clamp(self, min, max)
 	)
 end
 
+function Vector2.floor(self)
+	return Vector2.new(
+		math.floor(self.x),
+		math.floor(self.y)
+	)
+end
+
 
 local player = {
-	ACCELERATION = 2,
-	MAX_VELOCITY = 10,
+	ACCELERATION = 0.5,
+	DECELERATION = 0.5,
+	MAX_VELOCITY = 5,
 
 	position = Vector2.new(),
 	velocity = Vector2.new(),
@@ -109,12 +118,15 @@ local player = {
 	tick = function(self, v)
 		local joy_vector = get_arrows()
 		if joy_vector == Vector2.ZERO then
-			self.velocity = self.velocity - Vector2.new(self.velocity.x > 0 and 1 or self.velocity.x < 0 and -1 or 0, self.velocity.y > 0 and 1 or self.velocity.y < 0 and -1 or 0)
+			self.velocity = self.velocity - Vector2.new(
+				self.velocity.x > 0 and self.DECELERATION or self.velocity.x < 0 and -self.DECELERATION or 0,
+				self.velocity.y > 0 and self.DECELERATION or self.velocity.y < 0 and -self.DECELERATION or 0
+			)
 		else
 			self.velocity = (self.velocity + joy_vector * Vector2.new(self.ACCELERATION, self.ACCELERATION)):clamp(Vector2.new(-self.MAX_VELOCITY, -self.MAX_VELOCITY), Vector2.new(self.MAX_VELOCITY, self.MAX_VELOCITY))
 		end
 
-		self.position = self.position + self.velocity
+		self.position = (self.position + self.velocity):floor()
 	end
 }
 
@@ -123,7 +135,7 @@ function TIC()
 	cls()
 	player:tick()
 
-	print(player.velocity.x,84,84)
+	print(player.velocity.x,player.position.x,player.position.y)
 end
 
 
