@@ -130,12 +130,41 @@ local player = {
 	end
 }
 
+freq = 0
+vol = 0
 
 function TIC()
 	cls()
 	player:tick()
 
 	print(player.velocity.x,player.position.x,player.position.y)
+
+	if btnp(4) then freq = freq - 1 end
+	if btnp(5) then freq = freq + 1 end
+
+	if btnp(6) then vol = vol - 1 end
+	if btnp(7) then vol = vol + 1 end
+	
+	print(freq, 0,0)
+	print(vol,0,16)
+
+	rect(player.position.x, player.position.y, 16, 24, 2)
+	
+	--music
+	poke4(0xff9d*2+1, vol)   -- vol
+	poke4(0xff9d*2, freq>>8) -- freq hi
+	poke(0xff9c, freq&0xff)  -- freq lo
+	
+	wave1 = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15}
+	
+	wave(0xff9e, wave1)
+end
+
+function wave(address, data)
+	for i,v in ipairs(data)
+	do
+		poke4(address*2+i-1, v)
+	end
 end
 
 
