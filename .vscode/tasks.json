@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "cargo build --release --target=wasm32-unknown-unknown",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "command": "tica80 --fs . --cmd 'new wasm & import binary target/wasm32-unknown-unknown/release/cart.wasm & run'",
+			"osx": {
+				"command": "open /Applications/TIC-80.app --args --fs ${workspaceFolder} --cmd 'load main.lua & run'"
+			},
+            "label": "run",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+        }
+    ]
+}
