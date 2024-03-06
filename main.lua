@@ -14,22 +14,62 @@ function TIC() -- main loop
 
 -- OBJECTS
 	function player()
-			if Object.state = Idle
-				if btn(Button.Up   ) then Object.y = Object.y - 1 end
-				if btn(Button.Down ) then Object.y = Object.y + 1 end
-				if btn(Button.Left ) then Object.x = Object.x - 1 end
-				if btn(Button.Right) then Object.x = Object.x + 1 end
+			if btnp(Button.A) then a = a + 0.1 end
+
+			print(a, 0, 100)
+			
+			if Object.s == "Idle" then
+				if btn(Button.Right) then
+					Object.h = 1
+					Object.v = 0
+					Object.spr_index = 262
+					flip = 0
+					a = 0
+					Object.s = "Moving"
+				end
+				if btn(Button.Left) then
+					Object.h = -1
+					Object.v = 0
+					Object.spr_index = 262
+					flip = 1
+					a = 0
+					Object.s = "Moving"
+				end
+				if btn(Button.Down) then
+					Object.h = 0
+					Object.v = 1
+					Object.spr_index = 256
+					flip = 0
+					a = 0
+					Object.s = "Moving"
+				end
+				if btn(Button.Up) then
+					Object.h = 0
+					Object.v = -1
+					Object.spr_index = 256
+					flip = 0
+					a = 0
+					Object.s = "Moving"
+				end
+			end
+
+			if Object.s == "Moving" then
+					a = a + 2
+					Object.x = Object.x + (2 * Object.h)
+					Object.y = Object.y + (2 * Object.v)
+					if a > 32 then
+						a = 0
+						Object.s = "Idle"
+					end
 				end
 
-			if Object.state = Moving
-					t = t + 1
-					if t = 32 then Object.state = Moving then Object.state = Idle end
-				end
-
-			Object.y = 100 - math.abs(math.sin(t * 0.01) * 100)
-
+			
+			
+			
+			
 			-- render
-			rect(Object.x, Object.y, 24, 32, 1)
+			spr(Object.spr_index                                   , Object.x, Object.y + -(math.sin(a/32*math.pi) * 10)      , 0, 1, flip, 0, 3, 2)
+			spr(Object.spr_index + 3 * (a > 0 and 1 or 0 ) + (16*2), Object.x, Object.y + -(math.sin(a/32*math.pi) * 10) + 16 , 0, 1, flip, 0, 3, 2)
 		end
 
 -- OTHER
@@ -59,8 +99,8 @@ function TIC() -- main loop
 				poke4(address*2+i-1, v)
 			end
 		end
+a = 0
 
-		t = 0
 Button = {
 		Up    = 0,
 		Down  = 1,
@@ -78,10 +118,8 @@ Object = {
 		y = 64, -- y coor
 		h = 0, -- hor speed
 		v = 0, -- ver speed
-		s = {  -- state
-			Idle,
-			Moving,
-		}
+		s = "Idle",  -- state
+		spr_index = 256,
 	}
 
 -- MUSIC STUFF
