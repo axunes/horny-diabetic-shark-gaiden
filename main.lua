@@ -7,7 +7,31 @@
 -- script:  lua
 function BOOT()
 	music(5)
+	table.insert(layers, {
+		from = Vector2.new(0, 0),
+		size = Vector2.new(30, 17)
+	})
+
+	table.insert(layers, {
+		from = Vector2.new(0, 0),
+		size = Vector2.new(30, 17)
+	})
 end
+
+-- SHIT
+function math.clamp(v, min, max)
+	return math.max(min, math.min(max, v))
+end
+
+Vector2={new=function(a,b)end}Vector2={mt={__add=function(c,d)return Vector2.new(c.x+d.x,c.y+d.y)end,__sub=function(c,d)return Vector2.new(c.x-d.x,c.y-d.y)end,__mul=function(c,d)return Vector2.new(c.x*d.x,c.y*d.y)end,__eq=function(c,d)return c.x==d.x and c.y==d.y end},new=function(a,b)local e={x=a or 0,y=b or 0}e.clamp=Vector2.clamp;e.floor=Vector2.floor;setmetatable(e,Vector2.mt)return e end}Vector2.ZERO=Vector2.new()function Vector2.clamp(self,f,g)return Vector2.new(math.clamp(self.x,f.x,g.x),math.clamp(self.y,f.y,g.y))end;function Vector2.floor(self)return Vector2.new(math.floor(self.x),math.floor(self.y))end
+
+
+-- GLOBALS
+a = 0
+flip = 0
+camera = Vector2.new()
+layers = {}
+current_layer = 1 -- it's 1 index asshole
 
 function TIC() -- main loop
 	--cls()
@@ -22,8 +46,16 @@ function TIC() -- main loop
 
 	vbank(0) -- background mode
 	cls()
-	 draw_tiles(240//2, 136//2, 0, 0, 8, 8, 1 + math.sin(a/32*math.pi) * 0.5)
+
+	draw_layers()
+	--draw_tiles(240//2, 136//2, 0, 0, 8, 8, 1 + math.sin(a/32*math.pi) * 0.5)
 	--draw_tiles(0, 0, 0, 0, 8, 8, 1)
+end
+
+function draw_layers()
+	for depth, layer in ipairs(layers) do
+		draw_tiles(-Player.x, -Player.y, layer.from.x, layer.from.y, layer.size.x, layer.size.y, current_layer - depth * 0.1)
+	end
 end
 
 function draw_tiles(x, y, from_x_tiles, from_y_tiles, width_tiles, height_tiles, scale)
@@ -48,48 +80,48 @@ end
 	function player()
 			if btnp(Button.A) then a = a + 0.1 end
 			
-			if Object.s == "Idle" then
+			if Player.s == "Idle" then
 				if btn(Button.Right) then
-					Object.h = 1
-					Object.v = 0
-					Object.spr_index = 262
+					Player.h = 1
+					Player.v = 0
+					Player.spr_index = 262
 					flip = 0
 					a = 0
-					Object.s = "Moving"
+					Player.s = "Moving"
 				end
 				if btn(Button.Left) then
-					Object.h = -1
-					Object.v = 0
-					Object.spr_index = 262
+					Player.h = -1
+					Player.v = 0
+					Player.spr_index = 262
 					flip = 1
 					a = 0
-					Object.s = "Moving"
+					Player.s = "Moving"
 				end
 				if btn(Button.Down) then
-					Object.h = 0
-					Object.v = 1
-					Object.spr_index = 256
+					Player.h = 0
+					Player.v = 1
+					Player.spr_index = 256
 					flip = 0
 					a = 0
-					Object.s = "Moving"
+					Player.s = "Moving"
 				end
 				if btn(Button.Up) then
-					Object.h = 0
-					Object.v = -1
-					Object.spr_index = 256
+					Player.h = 0
+					Player.v = -1
+					Player.spr_index = 256
 					flip = 0
 					a = 0
-					Object.s = "Moving"
+					Player.s = "Moving"
 				end
 			end
 
-			if Object.s == "Moving" then
+			if Player.s == "Moving" then
 					a = a + 2
-					Object.x = Object.x + (2 * Object.h)
-					Object.y = Object.y + (2 * Object.v)
+					Player.x = Player.x + (2 * Player.h)
+					Player.y = Player.y + (2 * Player.v)
 					if a > 32 then
 						a = 0
-						Object.s = "Idle"
+						Player.s = "Idle"
 					end
 				end
 
@@ -98,8 +130,9 @@ end
 			
 			
 			-- render
-			spr(Object.spr_index                                   , Object.x, Object.y + -(math.sin(a/32*math.pi) * 15)      , 0, 1, flip, 0, 3, 2)
-			spr(Object.spr_index + 3 * (a > 0 and 1 or 0 ) + (16*2), Object.x, Object.y + -(math.sin(a/32*math.pi) * 15) + 16 , 0, 1, flip, 0, 3, 2)
+			spr(Player.spr_index                                   , 240/2 - Player.size.x / 2, 136/2  - Player.size.y / 2 - (math.sin(a/32*math.pi) * 15), 0, 1, flip, 0, 3, 2)
+			spr(Player.spr_index + 3 * (a > 0 and 1 or 0 ) + (16*2), 240/2 - Player.size.x / 2, 136/2  - Player.size.y / 2 - (math.sin(a/32*math.pi) * 15) + 16 , 0, 1, flip, 0, 3, 2)
+
 		end
 
 -- OTHER
@@ -142,7 +175,7 @@ Button = {
 		D     = 7
 	}
 
-Object = {
+Player = {
 		i = 0, -- object id
 		x = 96, -- x coor
 		y = 64, -- y coor
@@ -150,6 +183,7 @@ Object = {
 		v = 0, -- ver speed
 		s = "Idle",  -- state
 		spr_index = 256,
+		size = Vector2.new(24, 32),
 	}
 
 -- MUSIC STUFF
