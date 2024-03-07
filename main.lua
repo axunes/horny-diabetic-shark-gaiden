@@ -55,9 +55,12 @@ function TIC() -- main loop
 end
 
 function draw_layers()
-	for depth, layer in ipairs(layers) do
-		local ratio = (current_layer + depth * 0.1) * 0.5
-		draw_tiles(240 / 2 - Player.x * ratio , 136 / 2 - Player.y * ratio, layer.from.x, layer.from.y, layer.size.x, layer.size.y, ratio * 0.1)
+	for depth = #layers, 1, -1 do
+		local layer = layers[depth]
+		local ratio = (current_layer - (depth - 1) * 0.5) * 1
+		local offset_ratio = ratio * 1
+
+		draw_tiles(240 / 2 - Player.x * offset_ratio, 136 / 2 - Player.y * offset_ratio, layer.from.x, layer.from.y, layer.size.x, layer.size.y, ratio)
 	end
 end
 
