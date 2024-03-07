@@ -48,13 +48,16 @@ function TIC() -- main loop
 	cls()
 
 	draw_layers()
+
+	if btnp(Button.A) then current_layer = current_layer + 1 end
 	--draw_tiles(240//2, 136//2, 0, 0, 8, 8, 1 + math.sin(a/32*math.pi) * 0.5)
 	--draw_tiles(0, 0, 0, 0, 8, 8, 1)
 end
 
 function draw_layers()
 	for depth, layer in ipairs(layers) do
-		draw_tiles(-Player.x, -Player.y, layer.from.x, layer.from.y, layer.size.x, layer.size.y, current_layer - depth * 0.1)
+		local ratio = (current_layer + depth * 0.1) * 0.5
+		draw_tiles(240 / 2 - Player.x * ratio , 136 / 2 - Player.y * ratio, layer.from.x, layer.from.y, layer.size.x, layer.size.y, ratio * 0.1)
 	end
 end
 
@@ -78,7 +81,7 @@ end
 
 -- OBJECTS
 	function player()
-			if btnp(Button.A) then a = a + 0.1 end
+			-- if btnp(Button.A) then a = a + 0.1 end
 			
 			if Player.s == "Idle" then
 				if btn(Button.Right) then
