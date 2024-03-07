@@ -125,7 +125,7 @@ end
 					a = a + 2
 					Player.x = Player.x + (2 * Player.h)
 					Player.y = Player.y + (2 * Player.v)
-					if a > 32 then
+					if a == 32 then
 						a = 0
 						Player.s = "Idle"
 					end
