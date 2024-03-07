@@ -52,7 +52,7 @@ function TIC() -- main loop
 end
 
 function draw_layers()
-	for depth = #layers, current_layer, -1 do
+	for depth = #layers, #layers - 4, -1 do
 		local layer = layers[depth]
 		local ratio = (current_layer - ((depth - 1) * 0.25))
 		local size_ratio = ratio
