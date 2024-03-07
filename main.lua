@@ -41,7 +41,7 @@ function TIC() -- main loop
 	vbank(1) -- foreground mode
 	
 	cls()
-	print("FUCK YOU BALTIMORE", 50,0, 2)
+	print("playerpos: "..Player.x..", "..Player.y, 50,0, 2)
 	player()
 
 	vbank(0) -- background mode
@@ -183,8 +183,8 @@ Button = {
 
 Player = {
 		i = 0, -- object id
-		x = 96, -- x coor
-		y = 64, -- y coor
+		x = 0, -- x coor
+		y = 0, -- y coor
 		h = 0, -- hor speed
 		v = 0, -- ver speed
 		s = "Idle",  -- state
