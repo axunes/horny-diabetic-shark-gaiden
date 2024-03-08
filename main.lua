@@ -9,13 +9,7 @@ function BOOT()
 	music(0, 0, 0, true, true)
 
 	-- if your dimension has an EVEN number of tiles -- you MUST give it an ODD offset to keep it centered!
-	for _ = 1, 10 do
-		table.insert(layers, {
-			from = Vector2.new(0, 0),
-			size = Vector2.new(6, 5), -- size in 32x32 tiles
-			offset = Vector2.new(1, 0) -- size in 16x16 tiles
-		})
-	end
+	-- if your dimension has an ODD number of tiles -- you MUST give it an EVEN offset to keep it centered!
 end
 
 -- SHIT
@@ -30,8 +24,24 @@ Vector2={new=function(a,b)end}Vector2={mt={__add=function(c,d)return Vector2.new
 a = 0
 flip = 0
 camera = Vector2.new()
-layers = {}
 current_layer = 1 -- it's 1 index asshole ALSO THIS IS AN INT NOW OWOWWO
+areas = {
+	{
+		layers = {
+			{
+				from = Vector2.new(0, 0),
+				size = Vector2.new(17, 5), -- size in 32x32 tiles
+				offset = Vector2.new(8, 0) -- size in 16x16 tiles
+			},
+			{
+				from = Vector2.new(0, 0),
+				size = Vector2.new(6, 5), -- size in 32x32 tiles
+				offset = Vector2.new(10, 0) -- size in 16x16 tiles
+			},
+		
+		}
+	}
+}
 
 function TIC() -- main loop
 	vbank(1) -- foreground mode
@@ -43,7 +53,7 @@ function TIC() -- main loop
 	vbank(0) -- background mode
 	cls()
 
-	draw_layers()
+	draw_layers(areas[game.area].layers)
 end
 
 function BDR(scanline)
@@ -58,8 +68,8 @@ function BDR(scanline)
 	end
 end
 
-function draw_layers()
-	for depth = #layers - 1, current_layer, -1 do
+function draw_layers(layers)
+	for depth = #layers, current_layer, -1 do
 		local layer = layers[depth]
 		local ratio = math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1)
 
