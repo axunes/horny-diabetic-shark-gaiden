@@ -49,7 +49,7 @@ end
 function draw_layers()
 	for depth = #layers - 1, current_layer, -1 do
 		local layer = layers[depth]
-		local ratio = math.pow(2, -depth + current_layer + math.sin(Player.layer_falling_timer / 64 * math.pi))
+		local ratio = math.pow(2, -depth + current_layer + math.sin(math.pi * (Player.layer_falling_timer + 96) / 64) + 1)
 
 		vbank(1)
 		print("ratio "..depth..": "..ratio, 50, 8 * depth, 2)
