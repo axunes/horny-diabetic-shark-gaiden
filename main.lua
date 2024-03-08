@@ -38,7 +38,7 @@ function TIC() -- main loop
 	
 	cls()
 	print(current_layer, 50,0, 2)
-	player()
+	Player:update()
 
 	vbank(0) -- background mode
 	cls()
@@ -56,20 +56,20 @@ function draw_layers()
 		local layer = layers[depth]
 		-- local ratio = (current_layer - ((depth - 1) * 0.25))
 
-		local ratio = (math.pow(2, -depth + current_layer + Player.layer_falling_progress / 32))
+		local ratio = (math.pow(2, -depth + current_layer + Player.layer_falling_timer / 32))
 		local size_ratio = ratio
 
 		vbank(1)
 		print("ratio "..depth..": "..ratio, 50, 8 * depth, 2)
 		vbank(0)
 
-		if ratio < 1.9 then draw_tiles(
+		draw_tiles(
 			240 / 2 - Player.x * ratio + layer.offset.x * 16,
 			136 / 2 - Player.y * ratio + layer.offset.y * 16,
 			layer.from.x, layer.from.y,
 			layer.size.x, layer.size.y,
 			size_ratio
-		) end
+		)
 	end
 end
 
@@ -92,63 +92,84 @@ function draw_tiles(x, y, from_x_tiles, from_y_tiles, width_tiles, height_tiles,
 end
 
 -- OBJECTS
-	function player()
-			-- if btnp(Button.A) then a = a + 0.1 end
-			
-			if Player.state == "Idle" then
-				if btn(Button.Right) then
-					Player.h = 1
-					Player.v = 0
-					Player.spr_index = 262
-					flip = 0
-					a = 0
-					Player.state = "Moving"
-				end
-				if btn(Button.Left) then
-					Player.h = -1
-					Player.v = 0
-					Player.spr_index = 262
-					flip = 1
-					a = 0
-					Player.state = "Moving"
-				end
-				if btn(Button.Down) then
-					Player.h = 0
-					Player.v = 1
-					Player.spr_index = 256
-					flip = 0
-					a = 0
-					Player.state = "Moving"
-				end
-				if btn(Button.Up) then
-					Player.h = 0
-					Player.v = -1
-					Player.spr_index = 256
-					flip = 0
-					a = 0
-					Player.state = "Moving"
-				end
-			end
+Player = {
+	x = 0, -- x coor
+	y = 0, -- y coor
+	h = 0, -- hor speed
+	v = 0, -- ver speed
+	state = "Idle",
+	spr_index = 256,
+	size = Vector2.new(24, 32),
+	layer_falling_timer = 0 -- make this like 0 - 32 or something
+}
 
-			if Player.state == "Moving" then
-					a = a + 2
-					Player.x = Player.x + (2 * Player.h)
-					Player.y = Player.y + (2 * Player.v)
-					if a == 32 then
-						a = 0
-						Player.state = "Idle"
-					end
-				end
-
-			
-			
-			
-			
-			-- render
-			spr(Player.spr_index                                   , 240/2 - Player.size.x / 2, 136/2  - Player.size.y / 2 - (math.sin(a/32*math.pi) * 15), 0, 1, flip, 0, 3, 2)
-			spr(Player.spr_index + 3 * (a > 0 and 1 or 0 ) + (16*2), 240/2 - Player.size.x / 2, 136/2  - Player.size.y / 2 - (math.sin(a/32*math.pi) * 15) + 16 , 0, 1, flip, 0, 3, 2)
-
+function Player.update(self)
+	if self.state == "Idle" then
+		if btn(Button.A) then
+			self.state = "Falling"
 		end
+
+		if btn(Button.Right) then
+			self.h = 1
+			self.v = 0
+			self.spr_index = 262
+			flip = 0
+			a = 0
+			self.state = "Moving"
+		end
+
+		if btn(Button.Left) then
+			self.h = -1
+			self.v = 0
+			self.spr_index = 262
+			flip = 1
+			a = 0
+			self.state = "Moving"
+		end
+
+		if btn(Button.Down) then
+			self.h = 0
+			self.v = 1
+			self.spr_index = 256
+			flip = 0
+			a = 0
+			self.state = "Moving"
+		end
+
+		if btn(Button.Up) then
+			self.h = 0
+			self.v = -1
+			self.spr_index = 256
+			flip = 0
+			a = 0
+			self.state = "Moving"
+		end
+	end
+
+	if self.state == "Moving" then
+		a = a + 2
+		self.x = self.x + (2 * self.h)
+		self.y = self.y + (2 * self.v)
+		if a == 32 then
+			a = 0
+			self.state = "Idle"
+		end
+	end
+
+	if self.state == "Falling" then
+		self.layer_falling_timer = self.layer_falling_timer + 1
+		if self.layer_falling_timer == 32 then
+			current_layer = current_layer + 1
+			self.layer_falling_timer = 0
+			self.state = "Idle"
+		end
+	end
+
+	-- render
+	spr(self.spr_index                                   , 240/2 - self.size.x / 2, 136/2  - self.size.y / 2 - (math.sin(a/32*math.pi) * 15), 0, 1, flip, 0, 3, 2)
+	spr(self.spr_index + 3 * (a > 0 and 1 or 0 ) + (16*2), 240/2 - self.size.x / 2, 136/2  - self.size.y / 2 - (math.sin(a/32*math.pi) * 15) + 16 , 0, 1, flip, 0, 3, 2)
+
+end
 
 -- OTHER
 	function sound_test()
@@ -189,17 +210,6 @@ Button = {
 		C     = 6,
 		D     = 7
 	}
-
-Player = {
-	x = 0, -- x coor
-	y = 0, -- y coor
-	h = 0, -- hor speed
-	v = 0, -- ver speed
-	state = "Idle",
-	spr_index = 256,
-	size = Vector2.new(24, 32),
-	layer_falling_progress = 0 -- make this like 0 - 32 or something
-}
 
 -- MUSIC STUFF
 	freq = 0
