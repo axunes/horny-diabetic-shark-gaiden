@@ -9,7 +9,7 @@ function BOOT()
 	music(0, 0, 0, true, true)
 
 	-- if your dimension has an EVEN number of tiles -- you MUST give it an ODD offset to keep it centered!
-	for _ = 1, 1000 do
+	for _ = 1, 10 do
 		table.insert(layers, {
 			from = Vector2.new(0, 0),
 			size = Vector2.new(6, 5), -- size in 32x32 tiles
@@ -49,7 +49,7 @@ end
 function draw_layers()
 	for depth = #layers - 1, current_layer, -1 do
 		local layer = layers[depth]
-		local ratio = (math.pow(2, -depth + current_layer + Player.layer_falling_timer / 32))
+		local ratio = math.pow(2, -depth + current_layer + math.sin(Player.layer_falling_timer / 64 * math.pi))
 
 		vbank(1)
 		print("ratio "..depth..": "..ratio, 50, 8 * depth, 2)
