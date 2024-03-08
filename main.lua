@@ -54,10 +54,13 @@ end
 function draw_layers()
 	for depth = math.floor(current_layer + 4), math.floor(current_layer), -1 do
 		local layer = layers[depth]
-		local ratio = (current_layer - ((depth - 1) * 0.25))
+		-- local ratio = (current_layer - ((depth - 1) * 0.25))
+		
+		local ratio = (math.pow(2, -depth + current_layer))
 		local size_ratio = ratio
 
 		print("ratio "..depth..": "..size_ratio, 50, 8 * depth, 2)
+
 
 		draw_tiles(
 			240 / 2 - Player.x * ratio + layer.offset.x * 16,
