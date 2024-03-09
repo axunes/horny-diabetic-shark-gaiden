@@ -31,7 +31,7 @@ areas = {
 			{
 				from = Vector2.new(0, 0),
 				size = Vector2.new(17, 5), -- size in 32x32 tiles
-				offset = Vector2.new(8, 0) -- size in 16x16 tiles
+				offset = Vector2.new(2, 2) -- size in 16x16 tiles
 			},
 			{
 				from = Vector2.new(0, 0),
@@ -111,15 +111,6 @@ function draw_tiles(x, y, from_x_tiles, from_y_tiles, width_tiles, height_tiles,
 	local top_edge = center.y + fuck.y * scale
 	local bottom_edge = center.y + cuck.y * scale
 
-	vbank(1)
-	print(fuck.x.." "..fuck.y, 50,8, 2)
-	print(cuck.x.." "..cuck.y, 50,16, 2)
-	print(left_edge, 50,24, 2)
-	print(right_edge, 50,32, 2)
-	print(top_edge, 50,40, 2)
-	print(bottom_edge, 50,48, 2)
-	vbank(0)
-
 	local x1, y1 = left_edge, top_edge
 	local x2, y2 = right_edge, top_edge
 	local x3, y3 = left_edge, bottom_edge
@@ -151,7 +142,17 @@ function player.update(self)
 			self.state = "Falling"
 		end
 
-		if btn(Button.Right) then
+		local layer = areas[game.area].layers[current_layer]
+
+		local tile_pos = Vector2.new(
+			(self.x - layer.offset.x * 16 + layer.size.x * 16 - 16) // 32,
+			(self.y - layer.offset.y * 16 + layer.size.y * 16 - 16) // 32
+		)
+		
+		-- print(get_tile(self.x + 32, self.y), 50,8, 2)
+		print(tile_pos.x.." "..tile_pos.y, 50,8, 2)
+	
+		if btn(Button.Right) and get_tile(self.x + 32, self.y) ~= "wall" then
 			self.h = 1
 			self.v = 0
 			self.spr_index = 262
@@ -215,6 +216,23 @@ function player.update(self)
 
 end
 
+function get_tile(pos_x, pos_y)
+	local tiles = { -- id of top left 8x8 tile of the 32x32 tiles
+		[0] = "wall",
+		[16] = "ground",
+		[20] = "wall",
+		[24] = "ground",
+		[28] = "hole",
+		[80] = "ground",
+	}
+
+	local x = areas[game.area].layers[current_layer].from.x + pos_x + 240/2
+	local y = areas[game.area].layers[current_layer].from.y + pos_y + 136/2
+
+	--print("x: "..x.."y: "..y, 50,16, 2)
+
+	return tiles[mget((x - (x & 31)) // 32, (x - (x & 31)) // 32)]
+end
 -- OTHER
 	function sound_test()
 			if btn(Button.A) then freq = freq - 1 end
