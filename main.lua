@@ -76,8 +76,8 @@ function draw_layers(layers)
 		local ratio = math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1)
 
 		draw_tiles(
-			math.floor(240 / 2 - player.x * ratio + layer.offset.x * 16),
-			math.floor(136 / 2 - player.y * ratio + layer.offset.y * 16),
+			math.floor(240 / 2 - player.x),
+			math.floor(136 / 2 - player.y),
 			layer.from.x, layer.from.y,
 			layer.size.x, layer.size.y,
 			ratio
