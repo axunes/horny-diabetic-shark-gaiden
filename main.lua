@@ -72,6 +72,7 @@ function TIC() -- main loop
 	cls()
 	print("LAYER "..current_layer, 0, 0, 2)
 	player:update()
+	player:render()
 
 	vbank(0) -- background mode
 	cls()
@@ -177,14 +178,15 @@ function player.update(self)
 		end
 
 		if btn(Button.Right) then
-			self.h = 1
-			self.v = 0
 			self.spr_index = 262
 			self.flip = 0
 			
 			if get_tile(tile_pos.x + 1, tile_pos.y) ~= "wall" then
+				self.h = 1
+				self.v = 0
 				self.anim = 0
 				self.state = "Moving"
+				return
 			end
 		end
 
@@ -197,6 +199,7 @@ function player.update(self)
 			if get_tile(tile_pos.x - 1, tile_pos.y) ~= "wall" then
 				self.anim = 0
 				self.state = "Moving"
+				return
 			end
 		end
 
@@ -209,6 +212,7 @@ function player.update(self)
 			if get_tile(tile_pos.x, tile_pos.y + 1) ~= "wall" then
 				self.anim = 0
 				self.state = "Moving"
+				return
 			end
 		end
 
@@ -221,6 +225,7 @@ function player.update(self)
 			if get_tile(tile_pos.x, tile_pos.y - 1) ~= "wall" then
 				self.anim = 0
 				self.state = "Moving"
+				return
 			end
 		end
 	end
@@ -232,6 +237,7 @@ function player.update(self)
 		if self.anim == 32 then
 			self.anim = 0
 			self.state = "Idle"
+			return
 		end
 	end
 
@@ -241,15 +247,16 @@ function player.update(self)
 			current_layer = current_layer + 1
 			self.layer_falling_timer = 0
 			self.state = "Idle"
+			return
 		end
 	end
+end
 
-	-- render
+function player.render(self)
 	local jump_height_offset = math.sin(self.anim/32*math.pi) * -8
 
 	spr(self.spr_index                                           , 240/2 - self.size.x / 2, 136/2 - self.size.y / 2 + jump_height_offset - 8, 0, 1, self.flip, 0, 3, 2)
 	spr(self.spr_index + 3 * (self.anim > 0 and 1 or 0 ) + (16*2), 240/2 - self.size.x / 2, 136/2 - self.size.y / 2 + jump_height_offset + 8, 0, 1, self.flip, 0, 3, 2)
-
 end
 
 function get_tile(x, y)
