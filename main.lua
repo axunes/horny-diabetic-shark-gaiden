@@ -79,7 +79,7 @@ function TIC() -- main loop
 	draw_layers(areas[game.area].layers)
 end
 
-function BDR(scanline)
+function BDR(scanline) -- gradient
 	if game.area == 1 then
 		poke(0x3fc0, scanline * ((255 - 100) / 143) + 100)
 		poke(0x3fc1, scanline * ((255 - 150) / 143) + 100)
@@ -173,42 +173,55 @@ function player.update(self)
 
 		if get_tile(tile_pos.x, tile_pos.y) == "hole" then
 			self.state = "Falling"
+			return
 		end
 
-		if btn(Button.Right) and get_tile(tile_pos.x + 1, tile_pos.y) ~= "wall" then
+		if btn(Button.Right) then
 			self.h = 1
 			self.v = 0
 			self.spr_index = 262
 			self.flip = 0
-			self.anim = 0
-			self.state = "Moving"
+			
+			if get_tile(tile_pos.x + 1, tile_pos.y) ~= "wall" then
+				self.anim = 0
+				self.state = "Moving"
+			end
 		end
 
-		if btn(Button.Left) and get_tile(tile_pos.x - 1, tile_pos.y) ~= "wall" then
+		if btn(Button.Left) then
 			self.h = -1
 			self.v = 0
 			self.spr_index = 262
 			self.flip = 1
-			self.anim = 0
-			self.state = "Moving"
+			
+			if get_tile(tile_pos.x - 1, tile_pos.y) ~= "wall" then
+				self.anim = 0
+				self.state = "Moving"
+			end
 		end
 
-		if btn(Button.Down) and get_tile(tile_pos.x, tile_pos.y + 1) ~= "wall" then
+		if btn(Button.Down) then
 			self.h = 0
 			self.v = 1
 			self.spr_index = 256
 			self.flip = 0
-			self.anim = 0
-			self.state = "Moving"
+			
+			if get_tile(tile_pos.x, tile_pos.y + 1) ~= "wall" then
+				self.anim = 0
+				self.state = "Moving"
+			end
 		end
 
-		if btn(Button.Up) and get_tile(tile_pos.x, tile_pos.y - 1) ~= "wall" then
+		if btn(Button.Up) then
 			self.h = 0
 			self.v = -1
 			self.spr_index = 256
 			self.flip = 0
-			self.anim = 0
-			self.state = "Moving"
+			
+			if get_tile(tile_pos.x, tile_pos.y - 1) ~= "wall" then
+				self.anim = 0
+				self.state = "Moving"
+			end
 		end
 	end
 
