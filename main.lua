@@ -12,61 +12,59 @@ function BOOT()
 	-- if your dimension has an ODD number of tiles -- you MUST give it an EVEN offset to keep it centered!
 end
 
--- SHIT
-function math.clamp(v, min, max)
-	return math.max(min, math.min(max, v))
-end
-
-Vector2 = {
-	new = function(x, y)
-		local v = {
-			x = x or 0,
-			y = y or 0,
-		}
-	
-		return v
+-- MATH
+	function math.clamp(v, min, max) -- clamps a value
+		return math.max(min, math.min(max, v))
 	end
-}
 
-Vector2.ZERO = Vector2.new()
+-- VECTOR
+	Vector2 = {
+		new = function(x, y)
+			local v = {
+				x = x or 0,
+				y = y or 0,
+			}
+		
+			return v
+		end
+	}
+
+	Vector2.ZERO = Vector2.new()
 
 
-function Vector2.clamp(self, min, max)
-	return Vector2.new(
-		math.clamp(self.x, min.x, max.x),
-		math.clamp(self.y, min.y, max.y)
-	)
-end
+	function Vector2.clamp(self, min, max) -- clamps two values in a vector
+		return Vector2.new(
+			math.clamp(self.x, min.x, max.x),
+			math.clamp(self.y, min.y, max.y)
+		)
+	end
 
-function Vector2.floor(self)
-	return Vector2.new(
-		math.floor(self.x),
-		math.floor(self.y)
-	)
-end
+	function Vector2.floor(self) -- rounds down two values in a vector
+		return Vector2.new(
+			math.floor(self.x),
+			math.floor(self.y)
+		)
+	end
 
 
 -- GLOBALS
-a = 0
-flip = 0
-camera = Vector2.new()
-current_layer = 1 -- it's 1 index asshole ALSO THIS IS AN INT NOW OWOWWO
-areas = {
-	{
-		layers = {
-			{
-				from = Vector2.new(0, 0),
-				size = Vector2.new(17, 5), -- size in 32x32 tiles
-				offset = Vector2.new(10, 0) -- size in 16x16 tiles
-			},
-			{
-				from = Vector2.new(0, 0),
-				size = Vector2.new(6, 5), -- size in 32x32 tiles
-				offset = Vector2.new(23, 0) -- size in 16x16 tiles
-			},
+	current_layer = 1 -- (integer, 1 index)
+	areas = {
+		{ -- area 1
+			layers = {
+				{ -- layer 1
+					size       = Vector2.new(17, 5), -- (32x32)
+					map_offset = Vector2.new( 0, 0), -- (32x32)
+					pos_offset = Vector2.new(10, 0)  -- (16x16, from center)
+				},
+				{ -- layer 2
+					size       = Vector2.new( 6, 5), -- (32x32)
+					map_offset = Vector2.new( 0, 0), -- (32x32)
+					pos_offset = Vector2.new(23, 0)  -- (16x16, from center)
+				},
+			}
 		}
 	}
-}
 
 function TIC() -- main loop
 	vbank(1) -- foreground mode
@@ -99,9 +97,9 @@ function draw_layers(layers)
 		local ratio = math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1)
 
 		draw_tiles(
-			math.floor(240 / 2 - player.x + layer.offset.x * 16),
-			math.floor(136 / 2 - player.y + layer.offset.y * 16),
-			layer.from.x, layer.from.y,
+			math.floor(240 / 2 - player.x + layer.pos_offset.x * 16),
+			math.floor(136 / 2 - player.y + layer.pos_offset.y * 16),
+			layer.map_offset.x, layer.map_offset.y,
 			layer.size.x, layer.size.y,
 			ratio
 		)
@@ -154,6 +152,8 @@ player = {
 	v = 0, -- ver speed
 	state = "Idle",
 	spr_index = 256,
+	anim = 0,
+	flip = 0,
 	size = Vector2.new(24, 32),
 	layer_falling_timer = 0 -- make this like 0 - 32 or something
 }
@@ -167,8 +167,8 @@ function player.update(self)
 		local layer = areas[game.area].layers[current_layer]
 
 		local tile_pos = Vector2.new(
-			(self.x - layer.offset.x * 16 + layer.size.x * 16 - 16) // 32,
-			(self.y - layer.offset.y * 16 + layer.size.y * 16 - 16) // 32
+			(self.x - layer.pos_offset.x * 16 + layer.map_offset.x * 32 + layer.size.x * 16 - 16) // 32,
+			(self.y - layer.pos_offset.y * 16 + layer.map_offset.y * 32 + layer.size.y * 16 - 16) // 32
 		)
 
 		if get_tile(tile_pos.x, tile_pos.y) == "hole" then
@@ -179,8 +179,8 @@ function player.update(self)
 			self.h = 1
 			self.v = 0
 			self.spr_index = 262
-			flip = 0
-			a = 0
+			self.flip = 0
+			self.anim = 0
 			self.state = "Moving"
 		end
 
@@ -188,8 +188,8 @@ function player.update(self)
 			self.h = -1
 			self.v = 0
 			self.spr_index = 262
-			flip = 1
-			a = 0
+			self.flip = 1
+			self.anim = 0
 			self.state = "Moving"
 		end
 
@@ -197,8 +197,8 @@ function player.update(self)
 			self.h = 0
 			self.v = 1
 			self.spr_index = 256
-			flip = 0
-			a = 0
+			self.flip = 0
+			self.anim = 0
 			self.state = "Moving"
 		end
 
@@ -206,18 +206,18 @@ function player.update(self)
 			self.h = 0
 			self.v = -1
 			self.spr_index = 256
-			flip = 0
-			a = 0
+			self.flip = 0
+			self.anim = 0
 			self.state = "Moving"
 		end
 	end
 
 	if self.state == "Moving" then
-		a = a + 2
+		self.anim = self.anim + 2
 		self.x = self.x + (2 * self.h)
 		self.y = self.y + (2 * self.v)
-		if a == 32 then
-			a = 0
+		if self.anim == 32 then
+			self.anim = 0
 			self.state = "Idle"
 		end
 	end
@@ -232,10 +232,10 @@ function player.update(self)
 	end
 
 	-- render
-	local jump_height_offset = math.sin(a/32*math.pi) * -8
+	local jump_height_offset = math.sin(self.anim/32*math.pi) * -8
 
-	spr(self.spr_index                                   , 240/2 - self.size.x / 2, 136/2 - self.size.y / 2 + jump_height_offset - 8, 0, 1, flip, 0, 3, 2)
-	spr(self.spr_index + 3 * (a > 0 and 1 or 0 ) + (16*2), 240/2 - self.size.x / 2, 136/2 - self.size.y / 2 + jump_height_offset + 8, 0, 1, flip, 0, 3, 2)
+	spr(self.spr_index                                           , 240/2 - self.size.x / 2, 136/2 - self.size.y / 2 + jump_height_offset - 8, 0, 1, self.flip, 0, 3, 2)
+	spr(self.spr_index + 3 * (self.anim > 0 and 1 or 0 ) + (16*2), 240/2 - self.size.x / 2, 136/2 - self.size.y / 2 + jump_height_offset + 8, 0, 1, self.flip, 0, 3, 2)
 
 end
 
@@ -278,7 +278,6 @@ end
 				poke4(address*2+i-1, v)
 			end
 		end
-a = 0
 
 Button = {
 		Up    = 0,
