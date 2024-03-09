@@ -1,6 +1,6 @@
--- title:   tbd
--- author:  axunes
--- desc:    no
+-- title:   Horny Diabetic Shark ADVENTURES
+-- author:  axunes & nav
+-- desc:    I have dibetes so i made game good
 -- site:    https://axunes.net
 -- license: MIT License
 -- version: 0.1
@@ -31,12 +31,12 @@ areas = {
 			{
 				from = Vector2.new(0, 0),
 				size = Vector2.new(17, 5), -- size in 32x32 tiles
-				offset = Vector2.new(2, 2) -- size in 16x16 tiles
+				offset = Vector2.new(10, 0) -- size in 16x16 tiles
 			},
 			{
 				from = Vector2.new(0, 0),
 				size = Vector2.new(6, 5), -- size in 32x32 tiles
-				offset = Vector2.new(25, 0) -- size in 16x16 tiles
+				offset = Vector2.new(23, 0) -- size in 16x16 tiles
 			},
 		}
 	}
@@ -46,7 +46,7 @@ function TIC() -- main loop
 	vbank(1) -- foreground mode
 	
 	cls()
-	print(current_layer, 50,0, 2)
+	print("LAYER "..current_layer, 0, 0, 2)
 	player:update()
 
 	vbank(0) -- background mode
@@ -138,21 +138,18 @@ game = {
 
 function player.update(self)
 	if self.state == "Idle" then
-		if btn(Button.A) then
-			self.state = "Falling"
-		end
-
 		local layer = areas[game.area].layers[current_layer]
 
 		local tile_pos = Vector2.new(
 			(self.x - layer.offset.x * 16 + layer.size.x * 16 - 16) // 32,
 			(self.y - layer.offset.y * 16 + layer.size.y * 16 - 16) // 32
 		)
-		
-		-- print(get_tile(self.x + 32, self.y), 50,8, 2)
-		print(tile_pos.x.." "..tile_pos.y, 50,8, 2)
-	
-		if btn(Button.Right) and get_tile(self.x + 32, self.y) ~= "wall" then
+
+		if get_tile(tile_pos.x, tile_pos.y) == "hole" then
+			self.state = "Falling"
+		end
+
+		if btn(Button.Right) and get_tile(tile_pos.x + 1, tile_pos.y) ~= "wall" then
 			self.h = 1
 			self.v = 0
 			self.spr_index = 262
@@ -161,7 +158,7 @@ function player.update(self)
 			self.state = "Moving"
 		end
 
-		if btn(Button.Left) then
+		if btn(Button.Left) and get_tile(tile_pos.x - 1, tile_pos.y) ~= "wall" then
 			self.h = -1
 			self.v = 0
 			self.spr_index = 262
@@ -170,7 +167,7 @@ function player.update(self)
 			self.state = "Moving"
 		end
 
-		if btn(Button.Down) then
+		if btn(Button.Down) and get_tile(tile_pos.x, tile_pos.y + 1) ~= "wall" then
 			self.h = 0
 			self.v = 1
 			self.spr_index = 256
@@ -179,7 +176,7 @@ function player.update(self)
 			self.state = "Moving"
 		end
 
-		if btn(Button.Up) then
+		if btn(Button.Up) and get_tile(tile_pos.x, tile_pos.y - 1) ~= "wall" then
 			self.h = 0
 			self.v = -1
 			self.spr_index = 256
@@ -216,7 +213,7 @@ function player.update(self)
 
 end
 
-function get_tile(pos_x, pos_y)
+function get_tile(x, y)
 	local tiles = { -- id of top left 8x8 tile of the 32x32 tiles
 		[0] = "wall",
 		[16] = "ground",
@@ -226,12 +223,7 @@ function get_tile(pos_x, pos_y)
 		[80] = "ground",
 	}
 
-	local x = areas[game.area].layers[current_layer].from.x + pos_x + 240/2
-	local y = areas[game.area].layers[current_layer].from.y + pos_y + 136/2
-
-	--print("x: "..x.."y: "..y, 50,16, 2)
-
-	return tiles[mget((x - (x & 31)) // 32, (x - (x & 31)) // 32)]
+	return tiles[mget(x * 4, y * 4)]
 end
 -- OTHER
 	function sound_test()
@@ -440,7 +432,7 @@ Button = {
 -- </WAVES>
 
 -- <SFX>
--- 000:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000400400000000
+-- 000:00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000040b400000000
 -- 001:0100110011002100310041004100510051005100610061007100710071007100810f810d810c910d910ea10fb100b101c102d103d104e103e102e1003170000000ff
 -- 002:b300a40093108310735053504380338043c043c05380638073509350c310f310f300f300f300f300f300f300f300f300f300f300f300f300f300f3009754020f0f00
 -- 003:05070507050605052505250425033503350335024501450155014501550075006500650095007500a5009500a500c500d500e50fe50ff50fe50ff50f835000000000
