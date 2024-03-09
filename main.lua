@@ -57,10 +57,15 @@ end
 					map_offset = Vector2.new( 0, 0), -- (32x32)
 					pos_offset = Vector2.new(10, 0)  -- (16x16, from center)
 				},
+				{ -- layer 1
+					size       = Vector2.new(17, 5), -- (32x32)
+					map_offset = Vector2.new( 0, 0), -- (32x32)
+					pos_offset = Vector2.new(22, 0)  -- (16x16, from center)
+				},
 				{ -- layer 2
 					size       = Vector2.new( 6, 5), -- (32x32)
 					map_offset = Vector2.new( 0, 0), -- (32x32)
-					pos_offset = Vector2.new(23, 0)  -- (16x16, from center)
+					pos_offset = Vector2.new(35, 0)  -- (16x16, from center)
 				},
 			}
 		}
@@ -95,8 +100,17 @@ end
 function draw_layers(layers)
 	for depth = #layers, current_layer, -1 do
 		local layer = layers[depth]
-		local ratio = math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1)
-
+		local ratio
+		if depth == current_layer then
+			ratio = math.pow(20, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1)
+		else
+			ratio = math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1)
+		end
+		
+		vbank(1)
+		print (math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1), 64, depth * 8)
+		vbank(0)
+		
 		draw_tiles(
 			math.floor(240 / 2 - player.x + layer.pos_offset.x * 16),
 			math.floor(136 / 2 - player.y + layer.pos_offset.y * 16),
