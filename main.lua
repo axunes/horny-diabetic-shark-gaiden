@@ -31,7 +31,7 @@ areas = {
 			{
 				from = Vector2.new(0, 0),
 				size = Vector2.new(8, 8), -- size in 32x32 tiles
-				offset = Vector2.new(8, 0) -- size in 16x16 tiles
+				offset = Vector2.new(0, 0) -- size in 16x16 tiles
 			},
 			--[[
 			{
@@ -99,18 +99,19 @@ function draw_tiles(x, y, from_x_tiles, from_y_tiles, width_tiles, height_tiles,
 
 	-- to scale them evenly compare the x to the center of the screen
 	fuck = Vector2.new(
-		center.x - x,
-		center.y - y
+		(x - width / 2 - center.x),
+		(y - height / 2 - center.y)
+		
 	)
 
 	cuck = Vector2.new(
-		x - center.x,
-		y - center.y
+		-(center.x - x - width / 2),
+		-(center.y - y - height / 2)
 	)
 
 	local left_edge = center.x + fuck.x * scale
-	local right_edge = center.x - cuck.x * scale
-	local top_edge = center.y - fuck.y * scale
+	local right_edge = center.x + cuck.x * scale
+	local top_edge = center.y + fuck.y * scale
 	local bottom_edge = center.y + cuck.y * scale
 
 	vbank(1)
