@@ -30,17 +30,14 @@ areas = {
 		layers = {
 			{
 				from = Vector2.new(0, 0),
-				size = Vector2.new(8, 8), -- size in 32x32 tiles
-				offset = Vector2.new(0, 0) -- size in 16x16 tiles
+				size = Vector2.new(17, 5), -- size in 32x32 tiles
+				offset = Vector2.new(8, 0) -- size in 16x16 tiles
 			},
-			--[[
 			{
 				from = Vector2.new(0, 0),
 				size = Vector2.new(6, 5), -- size in 32x32 tiles
-				offset = Vector2.new(10, 0) -- size in 16x16 tiles
+				offset = Vector2.new(25, 0) -- size in 16x16 tiles
 			},
-			]]
-		
 		}
 	}
 }
@@ -76,8 +73,8 @@ function draw_layers(layers)
 		local ratio = math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1)
 
 		draw_tiles(
-			math.floor(240 / 2 - player.x),
-			math.floor(136 / 2 - player.y),
+			math.floor(240 / 2 - player.x + layer.offset.x * 16),
+			math.floor(136 / 2 - player.y + layer.offset.y * 16),
 			layer.from.x, layer.from.y,
 			layer.size.x, layer.size.y,
 			ratio
