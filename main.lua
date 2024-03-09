@@ -17,7 +17,33 @@ function math.clamp(v, min, max)
 	return math.max(min, math.min(max, v))
 end
 
-Vector2={new=function(a,b)end}Vector2={mt={__add=function(c,d)return Vector2.new(c.x+d.x,c.y+d.y)end,__sub=function(c,d)return Vector2.new(c.x-d.x,c.y-d.y)end,__mul=function(c,d)return Vector2.new(c.x*d.x,c.y*d.y)end,__eq=function(c,d)return c.x==d.x and c.y==d.y end},new=function(a,b)local e={x=a or 0,y=b or 0}e.clamp=Vector2.clamp;e.floor=Vector2.floor;setmetatable(e,Vector2.mt)return e end}Vector2.ZERO=Vector2.new()function Vector2.clamp(self,f,g)return Vector2.new(math.clamp(self.x,f.x,g.x),math.clamp(self.y,f.y,g.y))end;function Vector2.floor(self)return Vector2.new(math.floor(self.x),math.floor(self.y))end
+Vector2 = {
+	new = function(x, y)
+		local v = {
+			x = x or 0,
+			y = y or 0,
+		}
+	
+		return v
+	end
+}
+
+Vector2.ZERO = Vector2.new()
+
+
+function Vector2.clamp(self, min, max)
+	return Vector2.new(
+		math.clamp(self.x, min.x, max.x),
+		math.clamp(self.y, min.y, max.y)
+	)
+end
+
+function Vector2.floor(self)
+	return Vector2.new(
+		math.floor(self.x),
+		math.floor(self.y)
+	)
+end
 
 
 -- GLOBALS
