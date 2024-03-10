@@ -170,7 +170,8 @@ player = {
 	anim = 0,
 	flip = 0,
 	size = Vector2.new(24, 32),
-	layer_falling_timer = 0 -- make this like 0 - 32 or something
+	layer_falling_timer = 0, -- make this like 0 - 32 or something
+	keys_left = 0,
 }
 
 game = {
@@ -185,6 +186,11 @@ function player.update(self)
 			(self.x - layer.pos_offset.x * 16 + layer.map_offset.x * 32 + layer.size.x * 16 - 16) // 32,
 			(self.y - layer.pos_offset.y * 16 + layer.map_offset.y * 32 + layer.size.y * 16 - 16) // 32
 		)
+
+		if get_tile(tile_pos.x, tile_pos.y) == "spikes" then
+			trace("your die")
+			exit()
+		end
 
 		if get_tile(tile_pos.x, tile_pos.y) == "hole" then
 			self.state = "Falling"
@@ -203,14 +209,14 @@ function player.update(self)
 
 		self.flip = self.direction.x < 0 and 1 or 0
 
-		if self.direction.x == 1 or self.direction.x == -1 then self.spr_index = 262 end
-		if self.direction.y == 1 or self.direction.y == -1 then self.spr_index = 256 end
+		if self.direction.x == 1 or self.direction.x == -1 then self.spr_index = 262
+		elseif self.direction.y == 1 or self.direction.y == -1 then self.spr_index = 256 end
 			
 			
-		if get_tile(tile_pos.x + self.direction.x, tile_pos.y + self.direction.y) ~= "wall" then
-			self.anim = 0
+		if get_tile(tile_pos.x + self.direction.x, tile_pos.y + self.direction.y) == "ground"
+		or get_tile(tile_pos.x + self.direction.x, tile_pos.y + self.direction.y) == "hole"
+		or get_tile(tile_pos.x + self.direction.x, tile_pos.y + self.direction.y) == "lock" and player.keys_left <= 0 then
 			self.state = "Moving"
-			return
 		end
 	end
 
