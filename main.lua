@@ -8,6 +8,8 @@
 function BOOT()
 	music(game.area, 0, 0, true, true)
 
+	enter_new_layer()
+
 	-- if your dimension has an EVEN number of tiles -- you MUST give it an ODD offset to keep it centered!
 	-- if your dimension has an ODD number of tiles -- you MUST give it an EVEN offset to keep it centered!
 end
@@ -94,17 +96,21 @@ function TIC() -- main loop
 	draw_layers(areas[game.area].layers)
 end
 
+function enter_new_layer()
+	player.collected_keys = {}
+	player.keys_left = areas[game.area].layers[current_layer].keys and #areas[game.area].layers[current_layer].keys or 0
+end
+
 function draw_keys(layer)
-	keys = {
-		Vector2.new(0, 0),
-	}
-	if keys then
+	local keys = layer.keys
+	if keys and player.layer_falling_timer == 0 then
 		for i = 1, #keys do
-			-- spr(id, x, y, [colorkey=-1], [scale=1], [flip=0], [rotate=0], [w=1], [h=1])
-			spr(320,
-				8 + 240 / 2 - player.position.x + layer.pos_offset.x * 16 + keys[i].x * 32 - layer.size.x * 16,
-				8 + 136 / 2 - player.position.y + layer.pos_offset.y * 16 + keys[i].y * 32 - layer.size.y * 16,
-				0, 1, 0, 0, 2, 2)
+			if not player.collected_keys[i] then
+				spr(320,
+					8 + 240 / 2 - player.position.x + layer.pos_offset.x * 16 + keys[i].x * 32 - layer.size.x * 16,
+					-16 - 136 / 2 - player.position.y + layer.pos_offset.y * 16 + keys[i].y * 32 - layer.size.y * 16,
+					0, 1, 0, 0, 2, 2)
+			end
 		end
 	end
 end
@@ -157,10 +163,10 @@ function draw_tiles(x, y, from_x_tiles, from_y_tiles, width_tiles, height_tiles,
 		-(center.y - y - height / 2)
 	)
 
-	local left_edge = center.x + fuck.x * scale
-	local right_edge = center.x + cuck.x * scale
-	local top_edge = center.y + fuck.y * scale
-	local bottom_edge = center.y + cuck.y * scale
+	local left_edge = math.floor(center.x + fuck.x * scale)
+	local right_edge = math.floor(center.x + cuck.x * scale)
+	local top_edge = math.floor(center.y + fuck.y * scale)
+	local bottom_edge = math.floor(center.y + cuck.y * scale)
 
 	local x1, y1 = left_edge, top_edge
 	local x2, y2 = right_edge, top_edge
@@ -199,8 +205,18 @@ function player.update(self)
 		)
 
 		if get_tile(tile_pos.x, tile_pos.y) == "spikes" then
-			while true do end -- :)
+			trace("your die")
 			exit()
+		end
+
+		if layer.keys then
+			for i = 1, #layer.keys do
+				if not self.collected_keys[i] and tile_pos.x == layer.keys[i].x and tile_pos.y == layer.keys[i].y then
+					self.collected_keys[i] = true
+					self.keys_left = self.keys_left - 1
+					sfx(62, (12 * 6), -1, 1, 15)
+				end
+			end
 		end
 
 		if get_tile(tile_pos.x, tile_pos.y) == "hole" then
