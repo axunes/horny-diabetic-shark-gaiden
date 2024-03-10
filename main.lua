@@ -7,13 +7,12 @@
 -- script:  lua
 
 function BOOT()
-	music(game.area, 0, 0, true, true)
-
-	enter_new_layer()
-
-	-- if your dimension has an EVEN number of tiles -- you MUST give it an ODD offset to keep it centered!
-	-- if your dimension has an ODD number of tiles -- you MUST give it an EVEN offset to keep it centered!
+	enter_new_area()
 end
+
+-- if your dimension has an EVEN number of tiles -- you MUST give it an ODD offset to keep it centered!
+-- if your dimension has an ODD number of tiles -- you MUST give it an EVEN offset to keep it centered!
+
 
 -- MATH
 	function math.clamp(v, min, max) -- clamps a value
@@ -80,6 +79,38 @@ end
 				poke(0x3fc1, 0)
 				poke(0x3fc2, 20)
 			end,
+
+			rows_per_beat = 4,
+
+			layers = {
+				{ -- layer 1
+					size       = Vector2.new(17, 5), -- (32x32)
+					map_offset = Vector2.new( 0, 0), -- (32x32)
+					pos_offset = Vector2.new(10, 0),  -- (16x16, from center)
+				},
+				{ -- layer 2
+					size       = Vector2.new(19, 7), -- (32x32)
+					map_offset = Vector2.new( 0, 5), -- (32x32)
+					pos_offset = Vector2.new(8, -2),  -- (16x16, from center)
+					keys = {
+						Vector2.new(10, 6),
+						Vector2.new(6, 6),
+					},
+				},
+				{ -- layer 3
+					size       = Vector2.new(  5,  7), -- (32x32)
+					map_offset = Vector2.new(  0, 12), -- (32x32)
+					pos_offset = Vector2.new(-10, -2),  -- (16x16, from center)
+				},
+				{ -- layer 4
+					size       = Vector2.new(24, 9), -- (32x32)
+					map_offset = Vector2.new( 6,12), -- (32x32)
+					pos_offset = Vector2.new(1, 0),  -- (16x16, from center)
+					keys = {
+						Vector2.new(23, 19),
+					},
+				},
+			},
 		}
 	}
 
@@ -103,6 +134,23 @@ end
 function enter_new_layer()
 	player.collected_keys = {}
 	player.keys_left = areas[game.area].layers[current_layer].keys and #areas[game.area].layers[current_layer].keys or 0
+end
+
+function enter_new_area()
+	game.area = game.area + 1
+	current_layer = 1
+
+	player.position.x = 0
+	player.position.y = 0
+	player.direction.x = 0
+	player.state = "Idle"
+	player.spr_index = 256
+	player.anim = 0
+	player.flip = 0
+	player.layer_falling_timer = 0
+
+	music(game.area, 0, 0, true, true)
+	enter_new_layer()
 end
 
 function draw_keys(layer)
@@ -193,10 +241,11 @@ player = {
 	layer_falling_timer = 0, -- make this like 0 - 32 or something
 	keys_left = 0,
 	collected_keys = {},
+	area_transition_timer = 0, -- 32 again probably?
 }
 
 game = {
-	area = 1 -- tutorial?
+	area = 0 -- tutorial?
 }
 
 function player.update(self)
@@ -225,18 +274,23 @@ function player.update(self)
 
 		if get_tile(tile_pos.x, tile_pos.y) == "hole" then
 			local not_layer = areas[game.area].layers[current_layer + 1]
-			local not_tile_pos = Vector2.new(
-				(self.position.x - not_layer.pos_offset.x * 16 + not_layer.map_offset.x * 32 + not_layer.size.x * 16 - 16) // 32,
-				(self.position.y - not_layer.pos_offset.y * 16 + not_layer.map_offset.y * 32 + not_layer.size.y * 16 - 16) // 32
-			)
-			
-			self.state = "Falling"
+			if not_layer then
+				local not_tile_pos = Vector2.new(
+					(self.position.x - not_layer.pos_offset.x * 16 + not_layer.map_offset.x * 32 + not_layer.size.x * 16 - 16) // 32,
+					(self.position.y - not_layer.pos_offset.y * 16 + not_layer.map_offset.y * 32 + not_layer.size.y * 16 - 16) // 32
+				)
+				
+				self.state = "Falling"
 
-			if get_tile(not_tile_pos.x, not_tile_pos.y) == "spikes" then
-				sfx(61, (12 * 4)-1, -1, 1, 15)
-			else
-				sfx(60, (12 * 7)  , -1, 1, 15)
+				if get_tile(not_tile_pos.x, not_tile_pos.y) == "spikes" then
+					sfx(61, (12 * 4)-1, -1, 1, 15)
+				else
+					sfx(60, (12 * 7)  , -1, 1, 15)
+				end
+				return
 			end
+			
+			self.state = "Transitioning"
 			return
 		end
 		
@@ -288,6 +342,15 @@ function player.update(self)
 			return
 		end
 	end
+
+	if self.state == "Transitioning" then
+		self.area_transition_timer = self.area_transition_timer + 1
+		if self.area_transition_timer == 32 then
+			self.area_transition_timer = 0
+			enter_new_area()
+			return
+		end
+	end
 end
 
 function player.render(self)
@@ -318,33 +381,6 @@ function get_tile(x, y)
 
 	return tiles[mget(x * 4, y * 4)]
 end
--- OTHER
-	function sound_test()
-			if btn(Button.A) then freq = freq - 1 end
-			if btn(Button.B) then freq = freq + 1 end
-
-			if btnp(Button.C) then vol = vol - 1 end
-			if btnp(Button.D) then vol = vol + 1 end
-
-			print(freq, 0,0)
-			print(vol,0,16)
-
-			--music
-			poke4(0xff9d*2+1, vol)   -- vol
-			poke4(0xff9d*2, freq>>8) -- freq hi
-			poke(0xff9c, freq&0xff)  -- freq lo
-
-			poke_waveform(0xff9e, wave1)
-		end
-
--- SOUND
-	function poke_waveform(address, data)
-			-- update this so parameters are: (channel, wave)
-			for i,v in ipairs(data)
-			do
-				poke4(address*2+i-1, v)
-			end
-		end
 
 Button = {
 		Up    = 0,
@@ -373,13 +409,6 @@ function get_joy_vector_cardinal()
 
 	return Vector2.new(x, y)
 end
-
--- MUSIC STUFF
-	freq = 0
-	vol  = 0
-
--- WAVEFORM DATA
-	wave1 = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15}
 
 -- <TILES>
 -- 008:000000000000000000000000000000000000000800000088000008880000088c
