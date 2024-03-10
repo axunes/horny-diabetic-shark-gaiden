@@ -202,10 +202,8 @@ function player.update(self)
 		end
 		
 		local vector = get_joy_vector_cardinal()
-
-		vbank(1)
+		
 		print(vector.x.." "..vector.y, 64, 8)
-		vbank(0)
 		
 		if vector.x ~= 0 or vector.y ~= 0 then
 			self.direction = vector
