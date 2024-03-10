@@ -113,8 +113,8 @@ function draw_layers(layers)
 		end
 		
 		draw_tiles(
-			math.floor(240 / 2 - player.x + layer.pos_offset.x * 16),
-			math.floor(136 / 2 - player.y + layer.pos_offset.y * 16),
+			math.floor(240 / 2 - player.position.x + layer.pos_offset.x * 16),
+			math.floor(136 / 2 - player.position.y + layer.pos_offset.y * 16),
 			layer.map_offset.x, layer.map_offset.y,
 			layer.size.x, layer.size.y,
 			ratio
@@ -162,8 +162,7 @@ end
 
 -- OBJECTS
 player = {
-	x = 0, -- x coor
-	y = 0, -- y coor
+	position = Vector2.new(),
 	direction = Vector2.new(),
 	state = "Idle",
 	spr_index = 256,
@@ -183,8 +182,8 @@ function player.update(self)
 		local layer = areas[game.area].layers[current_layer]
 
 		local tile_pos = Vector2.new(
-			(self.x - layer.pos_offset.x * 16 + layer.map_offset.x * 32 + layer.size.x * 16 - 16) // 32,
-			(self.y - layer.pos_offset.y * 16 + layer.map_offset.y * 32 + layer.size.y * 16 - 16) // 32
+			(self.position.x - layer.pos_offset.x * 16 + layer.map_offset.x * 32 + layer.size.x * 16 - 16) // 32,
+			(self.position.y - layer.pos_offset.y * 16 + layer.map_offset.y * 32 + layer.size.y * 16 - 16) // 32
 		)
 
 		if get_tile(tile_pos.x, tile_pos.y) == "spikes" then
@@ -222,8 +221,8 @@ function player.update(self)
 
 	if self.state == "Moving" then
 		self.anim = self.anim + 2
-		self.x = self.x + (2 * self.direction.x)
-		self.y = self.y + (2 * self.direction.y)
+		self.position.x = self.position.x + (2 * self.direction.x)
+		self.position.y = self.position.y + (2 * self.direction.y)
 		if self.anim == 32 then
 			self.anim = 0
 			self.state = "Idle"
