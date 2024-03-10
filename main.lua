@@ -102,8 +102,8 @@ function draw_keys(layer)
 		for i = 1, #keys do
 			-- spr(id, x, y, [colorkey=-1], [scale=1], [flip=0], [rotate=0], [w=1], [h=1])
 			spr(320,
-				240 / 2 - player.position.x + layer.pos_offset.x * 16 + keys[i].x * 32 - layer.size.x * 16,
-				136 / 2 - player.position.y + layer.pos_offset.y * 16 + keys[i].y * 32 - layer.size.y * 16,
+				8 + 240 / 2 - player.position.x + layer.pos_offset.x * 16 + keys[i].x * 32 - layer.size.x * 16,
+				8 + 136 / 2 - player.position.y + layer.pos_offset.y * 16 + keys[i].y * 32 - layer.size.y * 16,
 				0, 1, 0, 0, 2, 2)
 		end
 	end
