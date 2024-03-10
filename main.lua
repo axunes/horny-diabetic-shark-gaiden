@@ -1,6 +1,6 @@
 -- title:   Horny Diabetic Shark ADVENTURES
--- author:  axunes & nav
--- desc:    I have dibetes so i made game good
+-- author:  axunes + Navidon1147
+-- desc:    THIS GAME CONTAINS COCK
 -- site:    https://axunes.net
 -- license: MIT License
 -- version: 0.1
@@ -29,24 +29,6 @@ end
 		end
 	}
 
-	Vector2.ZERO = Vector2.new()
-
-
-	function Vector2.clamp(self, min, max) -- clamps two values in a vector
-		return Vector2.new(
-			math.clamp(self.x, min.x, max.x),
-			math.clamp(self.y, min.y, max.y)
-		)
-	end
-
-	function Vector2.floor(self) -- rounds down two values in a vector
-		return Vector2.new(
-			math.floor(self.x),
-			math.floor(self.y)
-		)
-	end
-
-
 -- GLOBALS
 	current_layer = 1 -- (integer, 1 index)
 	areas = {
@@ -63,22 +45,26 @@ end
 				{ -- layer 1
 					size       = Vector2.new(17, 5), -- (32x32)
 					map_offset = Vector2.new( 0, 0), -- (32x32)
-					pos_offset = Vector2.new(10, 0)  -- (16x16, from center)
+					pos_offset = Vector2.new(10, 0),  -- (16x16, from center)
 				},
 				{ -- layer 2
 					size       = Vector2.new(19, 7), -- (32x32)
 					map_offset = Vector2.new( 0, 5), -- (32x32)
-					pos_offset = Vector2.new(8, -2)  -- (16x16, from center)
+					pos_offset = Vector2.new(8, -2),  -- (16x16, from center)
+					keys = {
+						Vector2.new(10, 6),
+						Vector2.new(6, 6),
+					},
 				},
 				{ -- layer 3
 					size       = Vector2.new(  5,  7), -- (32x32)
 					map_offset = Vector2.new(  0, 12), -- (32x32)
-					pos_offset = Vector2.new(-10, -2)  -- (16x16, from center)
+					pos_offset = Vector2.new(-10, -2),  -- (16x16, from center)
 				},
 				{ -- layer 4
 					size       = Vector2.new(24, 9), -- (32x32)
 					map_offset = Vector2.new( 6,12), -- (32x32)
-					pos_offset = Vector2.new(1, 0)  -- (16x16, from center)
+					pos_offset = Vector2.new(1, 0),  -- (16x16, from center)
 				},
 			}
 		},
@@ -93,16 +79,34 @@ end
 
 function TIC() -- main loop
 	vbank(1) -- foreground mode
-	
 	cls()
-	print("LAYER "..current_layer, 0, 0, 2)
+
 	player:update()
+	draw_keys(areas[game.area].layers[current_layer])
+
+	print("LAYER "..current_layer, 0, 0, 2)
+	
 	player:render()
 
 	vbank(0) -- background mode
 	cls()
 
 	draw_layers(areas[game.area].layers)
+end
+
+function draw_keys(layer)
+	keys = {
+		Vector2.new(0, 0),
+	}
+	if keys then
+		for i = 1, #keys do
+			-- spr(id, x, y, [colorkey=-1], [scale=1], [flip=0], [rotate=0], [w=1], [h=1])
+			spr(320,
+				240 / 2 - player.position.x + layer.pos_offset.x * 16 + keys[i].x * 32 - layer.size.x * 16,
+				136 / 2 - player.position.y + layer.pos_offset.y * 16 + keys[i].y * 32 - layer.size.y * 16,
+				0, 1, 0, 0, 2, 2)
+		end
+	end
 end
 
 function BDR(scanline) -- gradient background
@@ -178,6 +182,7 @@ player = {
 	size = Vector2.new(24, 32),
 	layer_falling_timer = 0, -- make this like 0 - 32 or something
 	keys_left = 0,
+	collected_keys = {},
 }
 
 game = {
@@ -215,8 +220,6 @@ function player.update(self)
 		end
 		
 		local vector = get_joy_vector_cardinal()
-
-		print(vector.x.." "..vector.y, 64, 8)
 		
 		if vector.x ~= 0 or vector.y ~= 0 then
 			self.direction = vector
@@ -266,7 +269,8 @@ function player.update(self)
 end
 
 function player.render(self)
-	print("fuck you baltimore")
+	local layer = areas[game.area].layers[current_layer]
+	print(((self.position.x - layer.pos_offset.x * 16 + layer.map_offset.x * 32 + layer.size.x * 16 - 16) // 32).." "..((self.position.y - layer.pos_offset.y * 16 + layer.map_offset.y * 32 + layer.size.y * 16 - 16) // 32), 0, 8)
 	local jump_height_offset = math.sin(self.anim/32*math.pi) * -8
 
 	spr(self.spr_index                                           , 240/2 - self.size.x / 2, 136/2 - self.size.y / 2 + jump_height_offset - 8, 0, 1, self.flip, 0, 3, 2)
@@ -558,6 +562,10 @@ end
 -- 057:000ffffb00fccffb0fcccbff00fcccbf000fccba0000fccb00000fc000000000
 -- 058:bbbfecbfccbcbcbfccb00cfffb0000faf000000b0000000b0000000000000000
 -- 059:ffb00f00fbcbbff0eaecff00aaeff000baf00000bf000000f000000000000000
+-- 064:0000000000000055000005560000556000055555000556660005566600005555
+-- 065:0000000055000000655000000655000055555000666550006665500055550000
+-- 080:0000005500000005000000000000000600000005000000050000000000000000
+-- 081:5550000055000000550000005500000055000000550000005500000065000000
 -- </SPRITES>
 
 -- <MAP>
@@ -686,6 +694,7 @@ end
 -- 025:fd00fd032d173d134d005d0c6d087d0c8d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d00582000810008
 -- 060:f000e000d010c010b020a0209030803070406040505040503060206010700070108020803090409050a060a070b080b090c0a0c0b0d0c0d0d0e0f0e0689000000000
 -- 061:0c0e0c510c840cb60cb70cb60cb40ca20ca00ca00ca00ca00c900c900c800c800c800c800c800c800c800c700c700c700c700c700c600c600c600c60b09000000002
+-- 062:00f600f600fb00e900bb103b203020504060506060b06040706080708090a0909080b070b090c080d080d000c010c000c050d070e010e000f000f090e00000000006
 -- </SFX>
 
 -- <PATTERNS>
