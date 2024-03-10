@@ -51,6 +51,12 @@ end
 	current_layer = 1 -- (integer, 1 index)
 	areas = {
 		{ -- area 1
+			draw_bg = function(scanline)
+				poke(0x3fc0, scanline * ((255 - 100) / 143) + 100)
+				poke(0x3fc1, scanline * ((255 - 150) / 143) + 100)
+				poke(0x3fc2, 200)
+			end,
+
 			layers = {
 				{ -- layer 1
 					size       = Vector2.new(17, 5), -- (32x32)
@@ -73,6 +79,13 @@ end
 					pos_offset = Vector2.new(1, 0)  -- (16x16, from center)
 				},
 			}
+		},
+		{ -- area 2
+			draw_bg = function(scanline)
+				poke(0x3fc0, scanline * 0.125 + 10)
+				poke(0x3fc1, 0)
+				poke(0x3fc2, 20)
+			end,
 		}
 	}
 
@@ -90,16 +103,8 @@ function TIC() -- main loop
 	draw_layers(areas[game.area].layers)
 end
 
-function BDR(scanline) -- gradient
-	if game.area == 1 then
-		poke(0x3fc0, scanline * ((255 - 100) / 143) + 100)
-		poke(0x3fc1, scanline * ((255 - 150) / 143) + 100)
-		poke(0x3fc2, 200)
-	elseif game.area == 2 then
-		poke(0x3fc0, scanline * 0.125 + 10)
-		poke(0x3fc1, 0)
-		poke(0x3fc2, 20)
-	end
+function BDR(scanline) -- gradient background
+	areas[game.area].draw_bg(scanline)
 end
 
 function draw_layers(layers)
