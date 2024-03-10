@@ -207,9 +207,9 @@ function player.update(self)
 			
 			self.state = "Falling"
 			if get_tile(not_tile_pos.x, not_tile_pos.y) == "spikes" then
-				sfx(61, (12 * 5) - 3, -1, 1, 15, 0)
+				sfx(61, (12 * 4)-1, -1, 1, 15)
 			else
-				sfx(60, (12 * 7), -1, 1, 15, 0)
+				sfx(60, (12 * 7)  , -1, 1, 15)
 			end
 			return
 		end
