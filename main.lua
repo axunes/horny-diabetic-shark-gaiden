@@ -136,7 +136,9 @@ function enter_new_layer()
 	player.keys_left = areas[game.area].layers[current_layer].keys and #areas[game.area].layers[current_layer].keys or 0
 end
 
-function enter_new_area()
+function enter_new_area(dont_reset_music)
+	dont_reset_music = dont_reset_music or false
+
 	game.area = game.area + 1
 	current_layer = 1
 
@@ -149,7 +151,10 @@ function enter_new_area()
 	player.flip = 0
 	player.layer_falling_timer = 0
 
-	music(game.area, 0, 0, true, true)
+	if not dont_reset_music then
+		music(game.area, 0, 0, true, true)
+	end
+
 	enter_new_layer()
 end
 
@@ -258,8 +263,10 @@ function player.update(self)
 		)
 
 		if get_tile(tile_pos.x, tile_pos.y) == "spikes" then
-			trace("your die")
-			exit()
+			game.area = game.area - 1 -- lmao
+			sfx(63, (12 * 6), -1, 1, 15)
+			enter_new_area(true) -- lmao again
+			return
 		end
 
 		if layer.keys then
@@ -746,8 +753,8 @@ end
 -- 025:fd00fd032d173d134d005d0c6d087d0c8d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d000d00582000810008
 -- 060:f000e000d010c010b020a0209030803070406040505040503060206010700070108020803090409050a060a070b080b090c0a0c0b0d0c0d0d0e0f0e0689000000000
 -- 061:0c0e0c510c840cb60cb70cb60cb40ca20ca00ca00ca00ca00c900c900c800c800c800c800c800c800c800c700c700c700c700c700c600c600c600c60b09000000002
--- 062:00f600f600fb00e900bb103b203020504060506060b06040706080708090a0909080b070b090c080d080d000c010c000c050d070e010e000f000f090e04000000006
--- 063:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000
+-- 062:00f600f600fb00e900bb103b203020504060506060b06040706080708090a0909080b070b090c080d080d000c010c000c050d070e010e000f000f090e05000000006
+-- 063:0020043e05500251115f0131132000301051205f2371009030a030b140b140b050b250a160a260917092708380739062a052b032c022e011e000f000b04000000009
 -- </SFX>
 
 -- <PATTERNS>
