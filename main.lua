@@ -80,7 +80,7 @@ end
 				poke(0x3fc2, 20)
 			end,
 
-			rows_per_beat = 4,
+			rows_per_beat = 8,
 
 			layers = {
 				{ -- layer 1
@@ -245,7 +245,7 @@ player = {
 }
 
 game = {
-	area = 0 -- tutorial?
+	area = 1 -- tutorial?
 }
 
 function player.update(self)
