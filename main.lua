@@ -112,10 +112,6 @@ function draw_layers(layers)
 			ratio = math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1)
 		end
 		
-		vbank(1)
-		print (math.pow(2, -depth + current_layer + math.sin(math.pi * (player.layer_falling_timer + 96) / 64) + 1), 64, depth * 8)
-		vbank(0)
-		
 		draw_tiles(
 			math.floor(240 / 2 - player.x + layer.pos_offset.x * 16),
 			math.floor(136 / 2 - player.y + layer.pos_offset.y * 16),
@@ -168,8 +164,7 @@ end
 player = {
 	x = 0, -- x coor
 	y = 0, -- y coor
-	h = 0, -- hor speed
-	v = 0, -- ver speed
+	direction = Vector2.new(),
 	state = "Idle",
 	spr_index = 256,
 	anim = 0,
@@ -195,64 +190,34 @@ function player.update(self)
 			self.state = "Falling"
 			return
 		end
+		
+		local vector = get_joy_vector_cardinal()
 
-		if btn(Button.Right) then
-			self.spr_index = 262
-			self.flip = 0
-			
-			if get_tile(tile_pos.x + 1, tile_pos.y) ~= "wall" then
-				self.h = 1
-				self.v = 0
-				self.anim = 0
-				self.state = "Moving"
-				return
-			end
+		vbank(1)
+		print(vector.x.." "..vector.y, 64, 8)
+		vbank(0)
+		
+		if vector.x ~= 0 or vector.y ~= 0 then
+			self.direction = vector
 		end
 
-		if btn(Button.Left) then
-			self.h = -1
-			self.v = 0
-			self.spr_index = 262
-			self.flip = 1
-			
-			if get_tile(tile_pos.x - 1, tile_pos.y) ~= "wall" then
-				self.anim = 0
-				self.state = "Moving"
-				return
-			end
-		end
+		self.flip = self.direction.x < 0 and 1 or 0
 
-		if btn(Button.Down) then
-			self.h = 0
-			self.v = 1
-			self.spr_index = 256
-			self.flip = 0
+		if self.direction.x == 1 or self.direction.x == -1 then self.spr_index = 262 end
+		if self.direction.y == 1 or self.direction.y == -1 then self.spr_index = 256 end
 			
-			if get_tile(tile_pos.x, tile_pos.y + 1) ~= "wall" then
-				self.anim = 0
-				self.state = "Moving"
-				return
-			end
-		end
-
-		if btn(Button.Up) then
-			self.h = 0
-			self.v = -1
-			self.spr_index = 256
-			self.flip = 0
 			
-			if get_tile(tile_pos.x, tile_pos.y - 1) ~= "wall" then
-				self.anim = 0
-				self.state = "Moving"
-				return
-			end
+		if get_tile(tile_pos.x + self.direction.x, tile_pos.y + self.direction.y) ~= "wall" then
+			self.anim = 0
+			self.state = "Moving"
+			return
 		end
 	end
 
 	if self.state == "Moving" then
 		self.anim = self.anim + 2
-		self.x = self.x + (2 * self.h)
-		self.y = self.y + (2 * self.v)
+		self.x = self.x + (2 * self.direction.x)
+		self.y = self.y + (2 * self.direction.y)
 		if self.anim == 32 then
 			self.anim = 0
 			self.state = "Idle"
@@ -334,6 +299,23 @@ Button = {
 		C     = 6,
 		D     = 7
 	}
+
+function get_joy_vector_cardinal()
+	local x = 0
+	local y = 0
+
+	if btn(Button.Right) then
+		x = 1
+	elseif btn(Button.Left) then
+		x = -1
+	elseif btn(Button.Down) then
+		y = 1
+	elseif btn(Button.Up) then
+		y = -1
+	end
+
+	return Vector2.new(x, y)
+end
 
 -- MUSIC STUFF
 	freq = 0
